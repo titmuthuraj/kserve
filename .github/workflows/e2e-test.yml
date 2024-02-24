@@ -200,6 +200,16 @@ jobs:
           compression-level: 0
           if-no-files-found: error
 
+      - name: Upload custom model http image
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "kserve/custom-model-http:${{ github.sha }}"
+
+      - name: Upload custom model transformer http image
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "kserve/custom-image-transformer-http:${{ github.sha }}"
+
   explainer-runtime-build:
     runs-on: ubuntu-latest
     needs: [poetry-check]
