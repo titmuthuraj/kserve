@@ -40,6 +40,10 @@ env:
   IMAGE_TRANSFORMER_IMG: "image-transformer"
   IMAGE_TRANSFORMER_IMG_TAG: "kserve/image-transformer:${{ github.sha }}"
   CUSTOM_TRANSFORMER_GRPC_IMG: "custom-image-transformer-grpc"
+
+  CUSTOM_MODEL_HTTP_IMG: "custom-model-http"
+  CUSTOM_TRANSFORMER_HTTP_IMG: "custom-image-transformer-http"
+
   # Graph images
   SUCCESS_200_ISVC_IMG: "success-200-isvc"
   ERROR_404_ISVC_IMG: "error-404-isvc"

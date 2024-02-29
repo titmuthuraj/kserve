@@ -163,11 +163,9 @@ class TestDataPlaneCloudEvent:
         headers, body = to_structured(event)
         infer_request, req_attributes = dataplane_with_ce_model.decode(body, headers)
         resp, response_headers = await dataplane_with_ce_model.infer(self.MODEL_NAME,
-                                                            infer_request,
-                                                            headers)
+                                                                     infer_request, headers)
         resp, res_headers = dataplane_with_ce_model.encode(self.MODEL_NAME,
-                                                       resp,
-                                                       headers, req_attributes)
+                                                           resp, headers, req_attributes)
         response_headers.update(res_headers)
         body = json.loads(resp)
 
@@ -194,7 +192,7 @@ class TestDataPlaneCloudEvent:
             infer_request, req_attributes = dataplane_with_ce_model.decode(body, headers)
             resp, response_headers = await dataplane_with_ce_model.infer(self.MODEL_NAME, infer_request, headers)
             resp, res_headers = dataplane_with_ce_model.encode(self.MODEL_NAME,
-                                                           resp, headers, req_attributes)
+                                                               resp, headers, req_attributes)
             response_headers.update(res_headers)
             body = json.loads(resp)
 
@@ -213,8 +211,7 @@ class TestDataPlaneCloudEvent:
             infer_request, req_attributes = dataplane_with_ce_model.decode(body, headers)
             resp, response_headers = await dataplane_with_ce_model.infer(self.MODEL_NAME, infer_request, headers)
             resp, res_headers = dataplane_with_ce_model.encode(self.MODEL_NAME,
-                                                           resp,
-                                                           headers, req_attributes)
+                                                               resp, headers, req_attributes)
             response_headers.update(res_headers)
             body = json.loads(resp)
 
@@ -255,11 +252,9 @@ class TestDataPlaneCloudEvent:
 
         infer_request, req_attributes = dataplane_with_ce_model.decode(body, headers)
         resp, response_headers = await dataplane_with_ce_model.infer(self.MODEL_NAME,
-                                                            infer_request,
-                                                            headers)
+                                                                     infer_request, headers)
         resp, res_headers = dataplane_with_ce_model.encode(self.MODEL_NAME,
-                                                       resp,
-                                                       headers, req_attributes)
+                                                           resp, headers, req_attributes)
         response_headers.update(res_headers)
 
         assert response_headers['content-type'] == "application/json"
@@ -277,8 +272,7 @@ class TestDataPlaneCloudEvent:
         infer_request, req_attributes = dataplane_with_ce_model.decode(body, headers)
         resp, response_headers = await dataplane_with_ce_model.infer(self.MODEL_NAME, infer_request, headers)
         resp, res_headers = dataplane_with_ce_model.encode(self.MODEL_NAME,
-                                                       resp,
-                                                       headers, req_attributes)
+                                                           resp, headers, req_attributes)
         response_headers.update(res_headers)
         assert response_headers['content-type'] == "application/json"
         assert response_headers['ce-specversion'] == "1.0"
@@ -355,12 +349,10 @@ class TestDataPlaneAvroCloudEvent:
 
         infer_request, req_attributes = dataplane_with_ce_model.decode(body, headers)
         resp, response_headers = await dataplane_with_ce_model.infer(self.MODEL_NAME,
-                                                            infer_request,
-                                                            headers)
+                                                                     infer_request, headers)
 
         resp, res_headers = dataplane_with_ce_model.encode(self.MODEL_NAME,
-                                                       resp,
-                                                       headers, req_attributes)
+                                                           resp, headers, req_attributes)
         response_headers.update(res_headers)
 
         assert response_headers['content-type'] == "application/json"
