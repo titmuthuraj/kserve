@@ -315,7 +315,7 @@ class DataPlane:
         .. _CloudEvent: https://cloudevents.io/
         """
         # call model locally or remote model workers
-        response_headers = headers if headers else {}
+        response_headers = {}
         model = self.get_model(model_name)
         if isinstance(model, RayServeSyncHandle):
             response, res_headers = ray.get(model.remote(request, headers=headers))
