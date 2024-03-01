@@ -70,7 +70,7 @@ pushd python >/dev/null
 
     echo "Building Custom model Http image"
     docker buildx build -t ${CUSTOM_MODEL_REST_IMG_TAG} -f custom_model.Dockerfile \
-      -o type=docker,dest="${DOCKER_IMAGES_PATH}/${CUSTOM_MODEL_HTTP_IMG}-${GITHUB_SHA}",compression-level=0 .
+      -o type=docker,dest="${DOCKER_IMAGES_PATH}/${CUSTOM_MODEL_REST_IMG}-${GITHUB_SHA}",compression-level=0 .
     echo "Building image transformer Http image"
     docker buildx build -t ${CUSTOM_TRANSFORMER_REST_IMG_TAG} -f custom_transformer.Dockerfile \
       -o type=docker,dest="${DOCKER_IMAGES_PATH}/${CUSTOM_TRANSFORMER_REST_IMG}-${GITHUB_SHA}",compression-level=0 .
