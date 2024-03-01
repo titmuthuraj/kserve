@@ -41,8 +41,8 @@ env:
   IMAGE_TRANSFORMER_IMG_TAG: "kserve/image-transformer:${{ github.sha }}"
   CUSTOM_TRANSFORMER_GRPC_IMG: "custom-image-transformer-grpc"
 
-  CUSTOM_MODEL_HTTP_IMG: "custom-model-http"
-  CUSTOM_TRANSFORMER_HTTP_IMG: "custom-image-transformer-http"
+  CUSTOM_MODEL_REST_IMG: "custom-model-http"
+  CUSTOM_TRANSFORMER_REST_IMG: "custom-image-transformer-http"
 
   # Graph images
   SUCCESS_200_ISVC_IMG: "success-200-isvc"
@@ -204,15 +204,22 @@ jobs:
           compression-level: 0
           if-no-files-found: error
 
-      - name: Upload custom model http image
-        uses: ishworkh/docker-image-artifact-upload@v1
+      - name: Upload custom model rest image
+        uses: actions/upload-artifact@v4
         with:
-          image: "kserve/custom-model-http:${{ github.sha }}"
+          name: ${{ env.PREDICTOR_ARTIFACT_PREFIX }}-${{ env.CUSTOM_MODEL_REST_IMG }}-${{ github.sha }}
+          path: ${{ env.DOCKER_IMAGES_PATH }}/${{ env.CUSTOM_MODEL_REST_IMG }}-${{ github.sha }}
+          compression-level: 0
+          if-no-files-found: error
+  
 
-      - name: Upload custom model transformer http image
-        uses: ishworkh/docker-image-artifact-upload@v1
+      - name: Upload custom model transformer rest image
+        uses: actions/upload-artifact@v4
         with:
-          image: "kserve/custom-image-transformer-http:${{ github.sha }}"
+          name: ${{ env.TRANSFORMER_ARTIFACT_PREFIX }}-${{ env.CUSTOM_TRANSFORMER_REST_IMG }}-${{ github.sha }}
+          path: ${{ env.DOCKER_IMAGES_PATH }}/${{ env.CUSTOM_TRANSFORMER_REST_IMG }}-${{ github.sha }}
+          compression-level: 0
+          if-no-files-found: error
 
   explainer-runtime-build:
     runs-on: ubuntu-latest

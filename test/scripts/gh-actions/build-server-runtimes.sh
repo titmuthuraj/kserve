@@ -33,8 +33,8 @@ PADDLE_IMG_TAG=${DOCKER_REPO}/${PADDLE_IMG}:${GITHUB_SHA}
 CUSTOM_MODEL_GRPC_IMG_TAG=${DOCKER_REPO}/${CUSTOM_MODEL_GRPC_IMG}:${GITHUB_SHA}
 CUSTOM_TRANSFORMER_GRPC_IMG_TAG=${DOCKER_REPO}/${CUSTOM_TRANSFORMER_GRPC_IMG}:${GITHUB_SHA}
 
-CUSTOM_MODEL_HTTP_IMG_TAG=${DOCKER_REPO}/${CUSTOM_MODEL_HTTP_IMG}:${GITHUB_SHA}
-CUSTOM_TRANSFORMER_HTTP_IMG_TAG=${DOCKER_REPO}/${CUSTOM_TRANSFORMER_HTTP_IMG}:${GITHUB_SHA}
+CUSTOM_MODEL_REST_IMG_TAG=${DOCKER_REPO}/${CUSTOM_MODEL_REST_IMG}:${GITHUB_SHA}
+CUSTOM_TRANSFORMER_REST_IMG_TAG=${DOCKER_REPO}/${CUSTOM_TRANSFORMER_REST_IMG}:${GITHUB_SHA}
 
 
 # Explainer images
@@ -69,11 +69,11 @@ pushd python >/dev/null
       -o type=docker,dest="${DOCKER_IMAGES_PATH}/${CUSTOM_TRANSFORMER_GRPC_IMG}-${GITHUB_SHA}",compression-level=0 .
 
     echo "Building Custom model Http image"
-    docker buildx build -t ${CUSTOM_MODEL_HTTP_IMG} -f custom_model.Dockerfile \
+    docker buildx build -t ${CUSTOM_MODEL_REST_IMG_TAG} -f custom_model.Dockerfile \
       -o type=docker,dest="${DOCKER_IMAGES_PATH}/${CUSTOM_MODEL_HTTP_IMG}-${GITHUB_SHA}",compression-level=0 .
     echo "Building image transformer Http image"
-    docker buildx build -t ${CUSTOM_TRANSFORMER_HTTP_IMG} -f custom_transformer.Dockerfile \
-      -o type=docker,dest="${DOCKER_IMAGES_PATH}/${CUSTOM_TRANSFORMER_HTTP_IMG}-${GITHUB_SHA}",compression-level=0 .
+    docker buildx build -t ${CUSTOM_TRANSFORMER_REST_IMG_TAG} -f custom_transformer.Dockerfile \
+      -o type=docker,dest="${DOCKER_IMAGES_PATH}/${CUSTOM_TRANSFORMER_REST_IMG}-${GITHUB_SHA}",compression-level=0 .
     
   fi
 
