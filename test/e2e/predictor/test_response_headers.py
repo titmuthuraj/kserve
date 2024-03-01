@@ -24,7 +24,7 @@ def test_predictor_headers_v1():
         containers=[
             V1Container(
                 name="kserve-container",
-                image="kserve/custom-model-http:"
+                image="kserve/custom-model-rest:"
                       + os.environ.get("GITHUB_SHA"),
                 resources=V1ResourceRequirements(
                     requests={"cpu": "50m", "memory": "128Mi"},
@@ -43,7 +43,7 @@ def test_predictor_headers_v1():
         containers=[
             V1Container(
                 name="kserve-container",
-                image="kserve/custom-image-transformer-http:"
+                image="kserve/custom-image-transformer-rest:"
                       + os.environ.get("GITHUB_SHA"),
                 resources=V1ResourceRequirements(
                     requests={"cpu": "50m", "memory": "128Mi"},
@@ -87,7 +87,7 @@ def test_predictor_headers_v2():
         containers=[
             V1Container(
                 name="kserve-container",
-                image="kserve/custom-model-http:"
+                image="kserve/custom-model-rest:"
                       + os.environ.get("GITHUB_SHA"),
                 resources=V1ResourceRequirements(
                     requests={"cpu": "50m", "memory": "128Mi"},
@@ -106,7 +106,7 @@ def test_predictor_headers_v2():
         containers=[
             V1Container(
                 name="kserve-container",
-                image="kserve/custom-image-transformer-http:"
+                image="kserve/custom-image-transformer-rest:"
                       + os.environ.get("GITHUB_SHA"),
                 resources=V1ResourceRequirements(
                     requests={"cpu": "50m", "memory": "128Mi"},

@@ -41,8 +41,8 @@ env:
   IMAGE_TRANSFORMER_IMG_TAG: "kserve/image-transformer:${{ github.sha }}"
   CUSTOM_TRANSFORMER_GRPC_IMG: "custom-image-transformer-grpc"
 
-  CUSTOM_MODEL_REST_IMG: "custom-model-http"
-  CUSTOM_TRANSFORMER_REST_IMG: "custom-image-transformer-http"
+  CUSTOM_MODEL_REST_IMG: "custom-model-rest"
+  CUSTOM_TRANSFORMER_REST_IMG: "custom-image-transformer-rest"
 
   # Graph images
   SUCCESS_200_ISVC_IMG: "success-200-isvc"
@@ -409,6 +409,12 @@ jobs:
           uses: actions/download-artifact@v4
           with:
             name: ${{ env.PREDICTOR_ARTIFACT_PREFIX }}-${{ env.XGB_IMG }}-${{ github.sha }}
+            path: ./tmp
+        
+        - name: Download custom model rest image
+          uses: actions/download-artifact@v4
+          with:
+            name: ${{ env.PREDICTOR_ARTIFACT_PREFIX }}-${{ env.CUSTOM_MODEL_REST_IMG }}-${{ github.sha }}
             path: ./tmp
 
         - name: Load docker images
