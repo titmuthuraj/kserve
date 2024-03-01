@@ -15,7 +15,7 @@ from kubernetes.client import V1Container, V1ContainerPort
 from ..common.utils import KSERVE_TEST_NAMESPACE, predict
 
 
-@pytest.mark.slow
+@pytest.mark.transformer
 def test_predictor_headers_v1():
     service_name = "isvc-custom-model-transformer-v1"
     model_name = "custom-model"
@@ -78,7 +78,7 @@ def test_predictor_headers_v1():
     kserve_client.delete(service_name, KSERVE_TEST_NAMESPACE)
 
 
-@pytest.mark.slow
+@pytest.mark.transformer
 def test_predictor_headers_v2():
     service_name = "isvc-custom-model-transformer-v2"
     model_name = "custom-model"
