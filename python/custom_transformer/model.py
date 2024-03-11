@@ -53,7 +53,8 @@ def image_transform(model_name, data):
 
 class ImageTransformer(Model):
     def __init__(self, name: str, predictor_host: str, predictor_protocol: str, predictor_use_ssl: bool):
-        super().__init__(name, PredictorConfig(predictor_host, predictor_protocol, predictor_use_ssl))
+        super().__init__(name, PredictorConfig(predictor_host, predictor_protocol, predictor_use_ssl),
+                         response_headers=True)
         self.ready = True
 
     def preprocess(self, payload: Union[Dict, InferRequest], headers: Dict[str, str] = None) \
