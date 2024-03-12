@@ -1,3 +1,4 @@
+name: Re-Run PR tests
 on:
     issue_comment:
       types: [created]
