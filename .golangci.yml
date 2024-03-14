@@ -13,7 +13,7 @@ issues:
 
 
 output:
-  format: github-actions
+  format: "github-actions,line-number"
   print-issued-lines: true
   print-linter-name: true
   uniq-by-line: true
