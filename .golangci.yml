@@ -22,27 +22,27 @@ output:
 
 # REF: https://golangci-lint.run/usage/linters/
 linters:
-  disable-all: true
-  enable:
-    - errorlint
-    - bodyclose
-    - dogsled
-    - exportloopref
-    - gocritic
-    - goimports
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - misspell
-    - nakedret
-    # - revive
-    - staticcheck
-    # - stylecheck
-    - typecheck
-    - unconvert
-    - unused
-    - whitespace
+  enable-all: true
+  # enable:
+  #   - errorlint
+  #   - bodyclose
+  #   - dogsled
+  #   - exportloopref
+  #   - gocritic
+  #   - goimports
+  #   - gosec
+  #   - gosimple
+  #   - govet
+  #   - ineffassign
+  #   - misspell
+  #   - nakedret
+  #   # - revive
+  #   - staticcheck
+  #   # - stylecheck
+  #   - typecheck
+  #   - unconvert
+  #   - unused
+  #   - whitespace
 
     # - prealloc
     # - gofmt
