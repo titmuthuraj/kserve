@@ -26,6 +26,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	apierr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
@@ -88,7 +89,6 @@ func NewCredentialBuilder(client client.Client, clientset kubernetes.Interface, 
 
 func (c *CredentialBuilder) CreateStorageSpecSecretEnvs(namespace string, annotations map[string]string, storageKey string,
 	overrideParams map[string]string, container *v1.Container) error {
-
 	stype := overrideParams["type"]
 	bucket := overrideParams["bucket"]
 
@@ -239,8 +239,9 @@ func (c *CredentialBuilder) CreateSecretVolumeAndEnv(namespace string, annotatio
 
 func (c *CredentialBuilder) mountSecretCredential(secretName string, namespace string,
 	container *v1.Container, volumes *[]v1.Volume) error {
-
-	secret, err := c.clientset.CoreV1().Secrets(namespace).Get(context.TODO(), secretName, metav1.GetOptions{})
+	secret := &v1.Secret{}
+	err := c.client.Get(context.TODO(), types.NamespacedName{Name: secretName,
+		Namespace: namespace}, secret)
 	if err != nil {
 		log.Error(err, "Failed to find secret", "SecretName", secretName)
 		return err

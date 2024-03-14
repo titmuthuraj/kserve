@@ -20,6 +20,10 @@ import (
 	"encoding/json"
 	"strings"
 
+	v1alpha1api "github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
+	"github.com/kserve/kserve/pkg/apis/serving/v1beta1"
+	"github.com/kserve/kserve/pkg/constants"
+	"github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/reconcilers/raw"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -31,11 +35,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-
-	v1alpha1api "github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
-	"github.com/kserve/kserve/pkg/apis/serving/v1beta1"
-	"github.com/kserve/kserve/pkg/constants"
-	"github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/reconcilers/raw"
 )
 
 var logger = logf.Log.WithName("InferenceGraphRawDeployer")
@@ -52,7 +51,7 @@ func createInferenceGraphPodSpec(graph *v1alpha1api.InferenceGraph, config *Rout
 		return nil
 	}
 
-	//Pod spec with 'router container with resource requirements' and 'affinity' as well
+	// Pod spec with 'router container with resource requirements' and 'affinity' as well
 	podSpec := &v1.PodSpec{
 		Containers: []v1.Container{
 			{
@@ -86,7 +85,6 @@ func createInferenceGraphPodSpec(graph *v1alpha1api.InferenceGraph, config *Rout
 A simple utility to create a basic meta object given name and namespace;  Can be extended to accept labels, annotations as well
 */
 func constructForRawDeployment(graph *v1alpha1api.InferenceGraph) (metav1.ObjectMeta, v1beta1.ComponentExtensionSpec) {
-
 	name := graph.ObjectMeta.Name
 	namespace := graph.ObjectMeta.Namespace
 	annotations := graph.ObjectMeta.Annotations
@@ -124,7 +122,7 @@ Handles bulk of raw deployment logic for Inference graph controller
 1. Constructs PodSpec
 2. Constructs Meta and Extensionspec
 3. Creates a reconciler
-4. Set controller referneces
+4. Set controller references
 5. Finally reconcile
 */
 func handleInferenceGraphRawDeployment(cl client.Client, clientset kubernetes.Interface, scheme *runtime.Scheme,
@@ -134,27 +132,27 @@ func handleInferenceGraphRawDeployment(cl client.Client, clientset kubernetes.In
 
 	objectMeta, componentExtSpec := constructForRawDeployment(graph)
 
-	//create the reconciler
-	reconciler, err := raw.NewRawKubeReconciler(cl, clientset, scheme, objectMeta, &componentExtSpec, desiredSvc)
+	// create the reconciler
+	reconciler, err := raw.NewRawKubeReconciler(cl, scheme, objectMeta, &componentExtSpec, desiredSvc)
 
 	if err != nil {
 		return nil, reconciler.URL, errors.Wrapf(err, "fails to create NewRawKubeReconciler for inference graph")
 	}
-	//set Deployment Controller
+	// set Deployment Controller
 	if err := controllerutil.SetControllerReference(graph, reconciler.Deployment.Deployment, scheme); err != nil {
 		return nil, reconciler.URL, errors.Wrapf(err, "fails to set deployment owner reference for inference graph")
 	}
-	//set Service Controller
+	// set Service Controller
 	if err := controllerutil.SetControllerReference(graph, reconciler.Service.Service, scheme); err != nil {
 		return nil, reconciler.URL, errors.Wrapf(err, "fails to set service owner reference for inference graph")
 	}
 
-	//set autoscaler Controller
+	// set autoscaler Controller
 	if err := reconciler.Scaler.Autoscaler.SetControllerReferences(graph, scheme); err != nil {
 		return nil, reconciler.URL, errors.Wrapf(err, "fails to set autoscaler owner references for inference graph")
 	}
 
-	//reconcile
+	// reconcile
 	deployment, err := reconciler.Reconcile()
 	logger.Info("Result of inference graph raw reconcile", "deployment", deployment)
 	logger.Info("Result of reconcile", "err", err)
@@ -172,7 +170,6 @@ In raw deployment mode, deployment available denotes the ready status for IG
 */
 func PropagateRawStatus(graphStatus *v1alpha1api.InferenceGraphStatus, deployment *appsv1.Deployment,
 	url *apis.URL) {
-
 	for _, con := range deployment.Status.Conditions {
 		if con.Type == appsv1.DeploymentAvailable {
 			graphStatus.URL = url

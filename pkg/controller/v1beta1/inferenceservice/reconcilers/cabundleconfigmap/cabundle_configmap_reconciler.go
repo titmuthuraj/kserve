@@ -27,6 +27,7 @@ import (
 	apierr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"knative.dev/pkg/kmp"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -91,9 +92,9 @@ func (c *CaBundleConfigMapReconciler) getCabundleConfigMapForUserNS(caBundleName
 
 	// Check if cabundle configmap exist & the cabundle.crt exist in the data in controller namespace
 	// If it does not exist, return error
-	caBundleConfigMap, err := c.clientset.CoreV1().ConfigMaps(kserveNamespace).Get(context.TODO(), caBundleNameInConfig, metav1.GetOptions{})
-
-	if err == nil {
+	caBundleConfigMap := &corev1.ConfigMap{}
+	if err := c.client.Get(context.TODO(),
+		types.NamespacedName{Name: caBundleNameInConfig, Namespace: kserveNamespace}, caBundleConfigMap); err == nil {
 		if caBundleConfigMapData := caBundleConfigMap.Data[constants.DefaultCaBundleFileName]; caBundleConfigMapData == "" {
 			return nil, fmt.Errorf("specified cabundle file %s not found in cabundle configmap %s",
 				constants.DefaultCaBundleFileName, caBundleNameInConfig)
@@ -124,7 +125,6 @@ func getDesiredCaBundleConfigMapForUserNS(configmapName string, namespace string
 
 // ReconcileCaBundleConfigMap will manage the creation, update and deletion of the ca bundle ConfigMap
 func (c *CaBundleConfigMapReconciler) ReconcileCaBundleConfigMap(desiredConfigMap *corev1.ConfigMap) error {
-
 	// Create ConfigMap if does not exist
 	existingConfigMap, err := c.clientset.CoreV1().ConfigMaps(desiredConfigMap.Namespace).Get(context.TODO(), desiredConfigMap.Name, metav1.GetOptions{})
 	if err != nil {
