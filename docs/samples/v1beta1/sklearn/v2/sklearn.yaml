@@ -3,6 +3,10 @@ kind: "InferenceService"
 metadata:
   name: "sklearn-irisv2"
 spec:
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "true"
   predictor:
     sklearn:
       protocolVersion: v2

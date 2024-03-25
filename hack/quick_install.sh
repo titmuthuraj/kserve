@@ -121,6 +121,41 @@ kubectl wait --for=condition=available --timeout=600s deployment/cert-manager-we
 cd ..
 echo "😀 Successfully installed Cert Manager"
 
+# Install Open Telemetry Operator
+kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml
+
+
+kubectl apply -f - <<EOF
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: simplest
+spec:
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 127.0.0.1:4317
+          http:
+            endpoint: 127.0.0.1:4318
+    exporters:
+      file:
+        path: ./log_tracing.json
+
+    extensions:
+      health_check:
+
+    service:
+      extensions: [health_check]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: []
+          exporters: [file]
+EOF
+
+
 # Install KServe
 KSERVE_CONFIG=kserve.yaml
 MAJOR_VERSION=$(echo ${KSERVE_VERSION:1} | cut -d "." -f1)
@@ -151,3 +186,28 @@ EOF
 kubectl patch cm inferenceservice-config -n kserve --type=merge --patch-file=deploy-config-patch.yaml
 fi
 echo "😀 Successfully installed KServe"
+
+
+kubectl apply -f - <<EOF
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: python-instrumentation
+  namespace: kserve
+spec:
+  exporter:
+    endpoint: http://simplest-collector:4318
+  env:
+  propagators:
+    - tracecontext
+    - baggage
+  python:
+    env:
+      - name: OTEL_LOGS_EXPORTER
+        value: otlp_proto_http
+      - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+        value: 'true'
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1"
+EOF

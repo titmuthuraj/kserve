@@ -65,6 +65,10 @@ boto3 = { version = "^1.21.0", optional = true }
 
 # Logging dependencies. They can be opted into by apps.
 asgi-logger = { version = "^0.1.0", optional = true, python = ">3.8.0,<3.11" }
+opentelemetry-distro = "^0.44b0"
+opentelemetry-instrumentation = "^0.44b0"
+opentelemetry-exporter-otlp = "^1.23.0"
+opentelemetry-instrumentation-wsgi = "^0.44b0"
 
 [tool.poetry.extras]
 storage = [

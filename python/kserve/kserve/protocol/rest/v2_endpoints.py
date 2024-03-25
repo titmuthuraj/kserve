@@ -18,6 +18,19 @@ from fastapi.requests import Request
 from fastapi.responses import Response
 from starlette.responses import StreamingResponse
 
+from opentelemetry.instrumentation.wsgi import collect_request_attributes
+from opentelemetry.propagate import extract
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import (
+    BatchSpanProcessor,
+    ConsoleSpanExporter,
+)
+from opentelemetry.trace import (
+    SpanKind,
+    get_tracer_provider,
+    set_tracer_provider,
+)
+
 from ..infer_type import InferInput, InferRequest
 from .v2_datamodels import (
     InferenceRequest, ServerMetadataResponse, ServerLiveResponse, ServerReadyResponse,
@@ -27,6 +40,20 @@ from ..dataplane import DataPlane
 from ..model_repository_extension import ModelRepositoryExtension
 from ...errors import ModelNotReady
 
+
+set_tracer_provider(TracerProvider())
+tracer = get_tracer_provider().get_tracer(__name__)
+
+get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(ConsoleSpanExporter())
+)
+
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def start_as_current_span_async(tracer, *args, **kwargs):
+    with tracer.start_as_current_span(*args, **kwargs) as span:
+        yield span
 
 class V2Endpoints:
     """KServe V2 Endpoints
@@ -109,6 +136,7 @@ class V2Endpoints:
 
         return ModelReadyResponse.parse_obj({"name": model_name, "ready": model_ready})
 
+    # @start_as_current_span_async(tracer, "my_span_titus")
     async def infer(
         self,
         raw_request: Request,
