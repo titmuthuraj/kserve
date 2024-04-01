@@ -23,6 +23,7 @@ STORAGE_INIT_IMG ?= storage-initializer
 QPEXT_IMG ?= qpext:latest
 CRD_OPTIONS ?= "crd:maxDescLen=0"
 KSERVE_ENABLE_SELF_SIGNED_CA ?= false
+HUGGINGFACE_SERVER_IMG ?= huggingfaceserver
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.27
 SUCCESS_200_ISVC_IMG ?= success-200-isvc
@@ -106,6 +107,9 @@ deploy-dev-lgb: docker-push-lgb
 deploy-dev-pmml : docker-push-pmml
 	./hack/serving_runtime_image_patch.sh "kserve-pmmlserver.yaml" "${KO_DOCKER_REPO}/${PMML_IMG}"
 
+deploy-dev-huggingface: docker-push-huggingface
+	./hack/serving_runtime_image_patch.sh "kserve-huggingfaceserver.yaml" "${KO_DOCKER_REPO}/${HUGGINGFACE_SERVER_IMG}"
+
 deploy-dev-paddle: docker-push-paddle
 	./hack/serving_runtime_image_patch.sh "kserve-paddleserver.yaml" "${KO_DOCKER_REPO}/${PADDLE_IMG}"
 
@@ -122,6 +126,12 @@ deploy-ci: manifests
 	# TODO: Add runtimes as part of default deployment
 	kubectl wait --for=condition=ready pod -l control-plane=kserve-controller-manager -n kserve --timeout=300s
 	kubectl apply -k config/overlays/test/clusterresources
+
+docker-build-huggingface:
+	cd python && docker buildx build -t ${KO_DOCKER_REPO}/${HUGGINGFACE_SERVER_IMG} -f huggingface_server.Dockerfile .
+
+docker-push-huggingface: docker-build-huggingface
+	docker push ${KO_DOCKER_REPO}/${HUGGINGFACE_SERVER_IMG}
 
 deploy-helm: manifests
 	helm install kserve-crd charts/kserve-crd/ --wait --timeout 180s

@@ -37,12 +37,14 @@ from botocore import UNSIGNED
 from botocore.client import Config
 from google.auth import exceptions
 from google.cloud import storage
+from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 MODEL_MOUNT_DIRS = "/mnt/models"
 
 _GCS_PREFIX = "gs://"
 _S3_PREFIX = "s3://"
 _HDFS_PREFIX = "hdfs://"
+_HUGGINGFACE_PREFIX = "hf://"
 _WEBHDFS_PREFIX = "webhdfs://"
 _AZURE_BLOB_RE = "https://(.+?).blob.core.windows.net/(.+)"
 _AZURE_FILE_RE = "https://(.+?).file.core.windows.net/(.+)"
@@ -79,6 +81,8 @@ class Storage(object):  # pylint: disable=too-few-public-methods
 
         if uri.startswith(_GCS_PREFIX):
             Storage._download_gcs(uri, out_dir)
+        elif uri.startswith(_HUGGINGFACE_PREFIX):
+            Storage._download_from_hf(uri, out_dir)
         elif uri.startswith(_S3_PREFIX):
             Storage._download_s3(uri, out_dir)
         elif uri.startswith(_HDFS_PREFIX) or uri.startswith(_WEBHDFS_PREFIX):
@@ -257,6 +261,21 @@ class Storage(object):  # pylint: disable=too-few-public-methods
             mimetype, _ = mimetypes.guess_type(target)
             if mimetype in ["application/x-tar", "application/zip"]:
                 Storage._unpack_archive_file(target, mimetype, temp_dir)
+
+    @staticmethod
+    def _download_from_hf(uri, temp_dir: str):
+        print("============ out dir =============", temp_dir)
+        # TODO: private organization url
+        token = os.environ.get("HF_TOKEN")
+        repo, model = uri.replace(_HUGGINGFACE_PREFIX, "", 1).split("/", 1)
+        model_name, _, hash_value = model.partition(":")
+        tokenizer = AutoTokenizer.from_pretrained(f"{repo}/{model_name}")
+        model_config = AutoConfig.from_pretrained(f"{repo}/{model_name}")
+        model = AutoModel.from_config(model_config)
+
+        tokenizer.save_pretrained(temp_dir)
+        model.save_pretrained(temp_dir)
+
 
     @staticmethod
     def _download_gcs(uri, temp_dir: str):

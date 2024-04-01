@@ -35,6 +35,7 @@ import (
 	"github.com/kserve/kserve/pkg/credentials/gcs"
 	"github.com/kserve/kserve/pkg/credentials/hdfs"
 	"github.com/kserve/kserve/pkg/credentials/https"
+	"github.com/kserve/kserve/pkg/credentials/huggingface"
 	"github.com/kserve/kserve/pkg/credentials/s3"
 	"github.com/kserve/kserve/pkg/utils"
 )
@@ -294,6 +295,10 @@ func (c *CredentialBuilder) mountSecretCredential(secretName string, namespace s
 		volume, volumeMount := hdfs.BuildSecret(secret)
 		*volumes = utils.AppendVolumeIfNotExists(*volumes, volume)
 		container.VolumeMounts = append(container.VolumeMounts, volumeMount)
+	} else if _, ok := secret.Data[huggingface.HuggingFaceToken]; ok {
+		log.Info("Setting secret for hdfs", "HdfsSecret", secret.Name)
+		envs := huggingface.BuildSecretEnvs(secret)
+		container.Env = append(container.Env, envs...)
 	} else {
 		log.V(5).Info("Skipping unsupported secret", "Secret", secret.Name)
 	}
